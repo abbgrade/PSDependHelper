@@ -21,14 +21,22 @@ function Build-DependencyFile {
 
             $data.RequiredModules | ForEach-Object {
                 $output = $outputTemplate.PSObject.Copy()
-                $output | Add-Member Module $_
+                if ( $_ -is [string] ) {
+                    $output | Add-Member Module $_
+                    $output | Add-Member Version latest
+                } elseif ( $_.ModuleName -and $_.ModuleVersion ) {
+                    $output | Add-Member Module $_.ModuleName
+                    $output | Add-Member Version $_.ModuleVersion
+                } else {
+                    Write-Error "Unsupported required module $_"
+                }
                 $output | Write-Output
             }
         }
 
         $dependencies | ForEach-Object {
             [PSCustomObject]@{
-                $_.Module = 'latest'
+                $_.Module = $_.Version
             }
         } | ConvertTo-Psd | Set-Content -Path $Path
     }
