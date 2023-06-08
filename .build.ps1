@@ -5,6 +5,7 @@ $ModuleName = 'PSDependHelper'
 
 task InstallBuildDependencies -Jobs {
     Install-Module PsdKit
+    Install-Module platyPs
 }
 task InstallTestDependencies -Jobs {}
 task InstallReleaseDependencies -Jobs {}
