@@ -9,7 +9,7 @@ Describe Import-Dependency {
         BeforeAll {
             [System.IO.DirectoryInfo] $Modules = $TestDrive
 
-            $Env:PSModulePath += ";$TestDrive"
+            $Env:PSModulePath += [IO.Path]::PathSeparator + $TestDrive
         }
 
         Context Manifest {
