@@ -24,24 +24,20 @@ function Export-DependencyFile {
     )
 
     begin {
-        $Modules = @()
+        $Dependencies = @{}
     }
 
     process {
-        $Modules += $Module
+        $Dependencies.( $Module.Name ) = if ( $Module.Version ) {
+            $Module.Version
+        }
+        else {
+            'latest'
+        }
     }
 
     end {
-        $Modules | ForEach-Object {
-            [PSCustomObject]@{
-                $_.Name = if ( $_.Version ) {
-                    $_.Version
-                }
-                else {
-                    'latest'
-                }
-            }
-        } | 
+        $Dependencies | 
         ConvertTo-Psd | 
         Set-Content -Path $Path
     }
