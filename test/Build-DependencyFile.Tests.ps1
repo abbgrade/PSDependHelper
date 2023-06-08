@@ -2,6 +2,7 @@ Describe Build-DependencyFile {
 
     BeforeAll {
         Import-Module $PSScriptRoot\..\src\PSDependHelper.psd1 -Force -ErrorAction Stop
+        $VerbosePreference = 'Continue'
     }
 
     Context SimpleManifest {
@@ -15,14 +16,6 @@ Describe Build-DependencyFile {
             @{ 
                 ModuleName    = 'MinimumModule' 
                 ModuleVersion = '1.0'
-                # }, `
-                # @{ 
-                #     ModuleName    = 'MaximumModule' 
-                #     MaximumVersion = '1.0'
-                # }, `
-                # @{ 
-                #     ModuleName    = 'RequiredModule' 
-                #     RequiredVersion = '1.0'
             }
         }
 
@@ -51,7 +44,7 @@ Describe Build-DependencyFile {
             }
 
             [System.IO.FileInfo] $SecondManifest = "$Modules/second.psd1"
-            New-ModuleManifest -Path $FirstManifest -RequiredModules `
+            New-ModuleManifest -Path $SecondManifest -RequiredModules `
                 TestModule
         }
 
@@ -61,6 +54,27 @@ Describe Build-DependencyFile {
             $DependencyFile | Should -Exist
             $Dependencies = Import-Psd $DependencyFile
             $Dependencies.TestModule | Should -Be '1.0'
+        }
+
+    }
+
+    Context Script {
+
+        BeforeAll {
+            [System.IO.DirectoryInfo] $Modules = "$TestDrive/simple_scripts"
+            New-Item $Modules -ItemType Directory
+
+            [System.IO.FileInfo] $Script = "$Modules/first.ps1"
+            Set-Content -Path $Script -Value '#Requires -Modules foo, bar -Version'
+        }
+
+        It works {
+            $DependencyFile = "$TestDrive/.depends.psd1"
+            Build-DependencyFile -Directory $Modules -Path $DependencyFile
+            $DependencyFile | Should -Exist
+            $Dependencies = Import-Psd $DependencyFile
+            $Dependencies.foo | Should -Be 'latest'
+            $Dependencies.bar | Should -Be 'latest'
         }
 
     }
