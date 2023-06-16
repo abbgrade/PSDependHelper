@@ -55,7 +55,7 @@ task SetFunctionsToExport {
 	Update-ModuleManifest -Path $Global:Manifest -FunctionsToExport (
 		Get-ChildItem -Path $PublicFunctionsDirectory -Filter *.ps1 | 
 		Select-Object -ExpandProperty BaseName
-	) -Verbose
+	)
 }
 
 # Synopsis: Build the module.
