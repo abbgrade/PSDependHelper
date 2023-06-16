@@ -3,6 +3,7 @@
 requires ModuleName
 
 [System.IO.DirectoryInfo] $SourceDirectory = "$PsScriptRoot/../src"
+[System.IO.DirectoryInfo] $PublicFunctionsDirectory = "$SourceDirectory/Public"
 [System.IO.DirectoryInfo] $SourceManifest = "$SourceDirectory/$ModuleName.psd1"
 [System.IO.DirectoryInfo] $PublishDirectory = "$PsScriptRoot/../publish"
 [System.IO.DirectoryInfo] $DocumentationDirectory = "$PsScriptRoot/../docs"
@@ -16,7 +17,7 @@ task Clean -Jobs {
 
 # Synopsis: Import the module.
 task Import -Jobs {
-    Import-Module $SourceManifest -Force
+	Import-Module $SourceManifest -Force
 }
 
 # Synopsis: Import platyPs.
@@ -25,18 +26,18 @@ task Import.platyPs -Jobs {
 }
 
 # Synopsis: Initialize the documentation directory.
-task Doc.Init.Directory -If { $DocumentationDirectory.Exists -eq $false} -Jobs {
+task Doc.Init.Directory -If { $DocumentationDirectory.Exists -eq $false } -Jobs {
 	New-Item $DocumentationDirectory -ItemType Directory
 }
 
 # Synopsis: Initialize the documentation.
 task Doc.Init -Jobs Import, Import.platyPs, Doc.Init.Directory, {
-    New-MarkdownHelp -Module $ModuleName -OutputFolder $DocumentationDirectory -Force:$ForceDocInit -ErrorAction Continue
+	New-MarkdownHelp -Module $ModuleName -OutputFolder $DocumentationDirectory -Force:$ForceDocInit -ErrorAction Continue
 }
 
 # Synopsis: Update the markdown documentation.
 task Doc.Update -Jobs Import, Import.platyPs, Doc.Init, {
-    Update-MarkdownHelp -Path $DocumentationDirectory
+	Update-MarkdownHelp -Path $DocumentationDirectory
 }
 
 task PreparePublishDirectory -If ( -Not ( Test-Path $PublishDirectory )) -Jobs {
@@ -49,24 +50,32 @@ task SetPrerelease -If $BuildNumber {
 	Update-ModuleManifest -Path $Global:Manifest -Prerelease $Global:PreRelease
 }
 
+# Synopsis: Set the functions to export in the manifest based on the directory structure.
+task SetFunctionsToExport {
+	Update-ModuleManifest -Path $Global:Manifest -FunctionsToExport (
+		Get-ChildItem -Path $PublicFunctionsDirectory -Filter *.ps1 | 
+		Select-Object -ExpandProperty BaseName
+	) -Verbose
+}
+
 # Synopsis: Build the module.
 task Build -Jobs Clean, Doc.Update, PreparePublishDirectory, {
 	Copy-Item -Path $SourceDirectory -Destination $ModulePublishDirectory -Recurse
-    [System.IO.FileInfo] $Global:Manifest = "$ModulePublishDirectory/$ModuleName.psd1"
-}, SetPrerelease
+	[System.IO.FileInfo] $Global:Manifest = "$ModulePublishDirectory/$ModuleName.psd1"
+}, SetPrerelease, SetFunctionsToExport
 
 # Synopsis: Install the module.
 task Install -Jobs Build, {
-    $info = Import-PowerShellDataFile $Global:Manifest
-    $version = ([System.Version] $info.ModuleVersion)
+	$info = Import-PowerShellDataFile $Global:Manifest
+	$version = ([System.Version] $info.ModuleVersion)
 	$defaultModulePath = $env:PSModulePath -split ';' | Select-Object -First 1
-    if ( -not $defaultModulePath ) {
-        Write-Error "Failed to determine default module path from `$env:PSModulePath='$( $env:PSModulePath )'"
-    }
+	if ( -not $defaultModulePath ) {
+		Write-Error "Failed to determine default module path from `$env:PSModulePath='$( $env:PSModulePath )'"
+	}
 	Write-Verbose "install $ModuleName $version to '$defaultModulePath'"
 	$installPath = Join-Path $defaultModulePath $ModuleName $version.ToString()
-    New-Item -Type Directory $installPath -Force | Out-Null
-    Get-ChildItem $Global:Manifest.Directory | Copy-Item -Destination $installPath -Recurse -Force
+	New-Item -Type Directory $installPath -Force | Out-Null
+	Get-ChildItem $Global:Manifest.Directory | Copy-Item -Destination $installPath -Recurse -Force
 }
 
 # Synopsis: Publish the module to PSGallery.
