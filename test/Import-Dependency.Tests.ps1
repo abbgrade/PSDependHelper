@@ -36,6 +36,20 @@ Describe Import-Dependency {
             }
         }
 
+        Context GenericPsdFile {
+            BeforeAll {
+                [System.IO.FileInfo] $PsdFile = Join-Path $Modules Generic.psd1
+                @{ Foo = 'bar'} | ConvertTo-Psd | 
+                Set-Content -Path $PsdFile
+            }
+
+            It works-from-parameters {
+                {
+                    Import-Dependency -Path $PsdFile -ErrorAction Stop
+                } | Should -Not -Throw
+            }
+        }
+
         Context Script {
             BeforeAll {
                 [System.IO.FileInfo] $Script = Join-Path $Modules script.ps1

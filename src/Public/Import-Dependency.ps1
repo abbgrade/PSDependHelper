@@ -26,14 +26,20 @@ function Import-Dependency {
 
     process {
         $Path | ForEach-Object {
+            Write-Verbose "Scanning $_"
             switch ( $_.Extension ) {
                 .psd1 {
                     $Path | 
                     Import-Psd |
-                    Select-Object -ExpandProperty RequiredModules |
+                    Select-Object -ExpandProperty RequiredModules -ErrorVariable RequiredModulesError -ErrorAction SilentlyContinue |
                     ForEach-Object {
                         New-Object -TypeName Microsoft.PowerShell.Commands.ModuleSpecification $_
                     }
+
+                    if ( $RequiredModulesError ) {
+                        Write-Warning "$RequiredModulesError in '$( $input[0] )'."
+                    }
+                    
                 }
                 .ps1 {
                     [System.Management.Automation.Language.ScriptBlockAst] $scriptBlockAst = [System.Management.Automation.Language.Parser]::ParseFile($Path, [ref]$null, [ref]$null)
