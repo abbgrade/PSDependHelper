@@ -5,15 +5,15 @@ online version:
 schema: 2.0.0
 ---
 
-# Import-Dependency
+# Find-OutdatedDependency
 
 ## SYNOPSIS
-Import dependencies from PowerShell scripts and manifests.
+{{ Fill in the Synopsis }}
 
 ## SYNTAX
 
 ```
-Import-Dependency [-Path] <FileInfo> [-Recurse] [<CommonParameters>]
+Find-OutdatedDependency [-Directory] <DirectoryInfo> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,33 +30,18 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -Path
-Path to the PowerShell script or manifest.
+### -Directory
+{{ Fill Directory Description }}
 
 ```yaml
-Type: FileInfo
-Parameter Sets: (All)
-Aliases: FullName
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Recurse
-If set, dependencies of required modules are imported recursively.
-
-```yaml
-Type: SwitchParameter
+Type: DirectoryInfo
 Parameter Sets: (All)
 Aliases:
 
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
+Required: True
+Position: 0
+Default value: None
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
@@ -65,9 +50,12 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### System.IO.DirectoryInfo
+
 ## OUTPUTS
 
 ### Microsoft.PowerShell.Commands.ModuleSpecification
+
 ## NOTES
 
 ## RELATED LINKS

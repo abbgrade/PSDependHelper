@@ -13,6 +13,7 @@ function Import-Dependency {
         # Path to the PowerShell script or manifest.
         [Parameter( Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName )]
         [ValidateScript({ $_.Exists })]
+        [Alias('FullName')]
         [System.IO.FileInfo] $Path,
 
         # If set, dependencies of required modules are imported recursively.
