@@ -9,7 +9,7 @@ Describe Import-Dependency {
         BeforeAll {
             [System.IO.DirectoryInfo] $Modules = $TestDrive
 
-            $Env:PSModulePath += ";$TestDrive"
+            $Env:PSModulePath += [IO.Path]::PathSeparator + $TestDrive
         }
 
         Context Manifest {
@@ -33,6 +33,20 @@ Describe Import-Dependency {
                 $Dependencies = $Manifest | Import-Dependency
                 $Dependencies | Where-Object Name -eq LatestModule | Select-Object -ExpandProperty Version | Should -Be $null
                 $Dependencies | Where-Object Name -eq MinimumModule | Select-Object -ExpandProperty Version | Should -Be '1.0'
+            }
+        }
+
+        Context GenericPsdFile {
+            BeforeAll {
+                [System.IO.FileInfo] $PsdFile = Join-Path $Modules Generic.psd1
+                @{ Foo = 'bar'} | ConvertTo-Psd | 
+                Set-Content -Path $PsdFile
+            }
+
+            It works-from-parameters {
+                {
+                    Import-Dependency -Path $PsdFile -ErrorAction Stop
+                } | Should -Not -Throw
             }
         }
 

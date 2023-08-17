@@ -1,3 +1,10 @@
+
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [int] $BuildNumber
+)
+
 $ModuleName = 'PSDependHelper'
 
 . $PSScriptRoot/tasks/Build.Tasks.ps1

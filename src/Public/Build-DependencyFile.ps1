@@ -29,6 +29,7 @@ function Build-DependencyFile {
         Get-ChildItem -Recurse -Include *.psd1, *.ps1 | 
         Import-Dependency |
         Group-Dependency | 
+        Sort-Object Name |
         Export-DependencyFile -Path $Path
     }
 }

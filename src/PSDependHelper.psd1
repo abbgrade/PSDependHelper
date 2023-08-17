@@ -30,7 +30,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) Steffen Kampmann. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'PSDependHelper provides functions to generate PSDepend configs.'
 
 # Minimum version of the PowerShell engine required by this module
 # PowerShellVersion = ''
@@ -98,10 +98,10 @@ PrivateData = @{
         # Tags = @()
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/Steffen Kampmanngrade/PSDependHelper/blob/master/LICENSE'
+        LicenseUri = 'https://github.com/abbgrade/PSDependHelper/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/Steffen Kampmanngrade/PSDependHelper'
+        ProjectUri = 'https://github.com/abbgrade/PSDependHelper'
 
         # A URL to an icon representing this module.
         # IconUri = ''
