@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2024-10-29
+
 ### Added
 
 - Added `Exclude` parameter to `Find-OutdatedDependency` function.
