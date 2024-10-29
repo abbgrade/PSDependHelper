@@ -6,7 +6,11 @@ function Find-OutdatedDependency {
         # The directory, to scan for dependencies.
         [Parameter( Mandatory, ValueFromPipeline )]
         [ValidateScript({ $_.Exists })]
-        [System.IO.DirectoryInfo] $Directory
+        [System.IO.DirectoryInfo] $Directory,
+
+        # Specifies an array of one or more string patterns to be matched as the cmdlet gets child items. Any matching item is excluded from the output. Enter a path element or pattern, such as *.txt or A*. Wildcard characters are accepted.
+        [Parameter()]
+        [string[]] $Exclude
     )
 
     begin {
@@ -15,7 +19,7 @@ function Find-OutdatedDependency {
 
     process {
         $Dependencies += $Directory | ForEach-Object {
-            $Dependencies1 = $_ | Get-ChildItem -Recurse -Include *.psd1, *.ps1 |
+            $Dependencies1 = $_ | Get-ChildItem -Exclude $Exclude -Recurse -Include *.psd1, *.ps1 |
             ForEach-Object {
                 $Dependencies2 = $_ | Import-Dependency
                 $Dependencies2 | Add-Member ByFilePath $_.FullName
